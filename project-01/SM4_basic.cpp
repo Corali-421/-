@@ -42,7 +42,7 @@ static const uint32_t FK[4] = {
     0xA3B1BAC6,0x56AA3350,0x677D9197,0xB27022DC
 };
 
-/*--------------------------------- 工具函数 --------------------------------*/
+///工具函数
 inline uint32_t rotl(uint32_t x, int n) {
     return (x << n) | (x >> (32 - n));
 }
@@ -62,7 +62,7 @@ inline uint32_t T(uint32_t x) {
     return L(tau(x));
 }
 
-/*----------------------------- 轮密钥扩展 ----------------------------------*/
+//轮密钥扩展 
 std::array<uint32_t, 32> key_schedule(const uint8_t MK[16]) {
     array<uint32_t, 32> rk;
     uint32_t K[36];
@@ -83,7 +83,7 @@ std::array<uint32_t, 32> key_schedule(const uint8_t MK[16]) {
     return rk;
 }
 
-/*----------------------------- 单块加解密 ----------------------------------*/
+//单块加解密 
 void sm4_encrypt(const uint8_t in[16], uint8_t out[16], const std::array<uint32_t, 32>& rk) {
     uint32_t X[36];
     for (int i = 0; i < 4; ++i) {
@@ -109,7 +109,7 @@ void sm4_decrypt(const uint8_t in[16], uint8_t out[16], const std::array<uint32_
     sm4_encrypt(in, out, rkr);
 }
 
-/*--------------------------------- 示例 ------------------------------------*/
+
 int main() {
     uint8_t key[16] = {
         0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,
