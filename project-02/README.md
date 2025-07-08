@@ -65,7 +65,7 @@ W^ = U · S_W · V.T
 
 ---
 
-## 🛡️ 3. 鲁棒性测试（`run_attacks_and_extract`）
+## 🛡️ 3. 鲁棒性测试（`test_robustness.py`）
 
 为了验证该系统对常见图像处理的鲁棒性，项目还内置了多种扰动攻击：
 
