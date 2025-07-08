@@ -83,14 +83,10 @@ W^ = U · S_W · V.T
 
 确保安装好依赖后，运行以下脚本完成嵌入与提取：
 
-```bash
 python embed_watermark.py            # 嵌入水印
 python extract_watermark.py          # 提取水印
 python run_attacks_and_extract.py    # 攻击测试 + 提取水印
 📁 文件结构说明
-bash
-复制
-编辑
 ├── embed_watermark.py             # 水印嵌入脚本
 ├── extract_watermark.py           # 水印提取脚本
 ├── run_attacks_and_extract.py     # 攻击与提取一体化脚本
