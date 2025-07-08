@@ -14,30 +14,22 @@
 2. 选取左上角低频区域 `C_block`，执行 SVD：
 C_block = U_C · S_C · V_C.T
 
-markdown
-复制
-编辑
+
 3. 对水印图 `W` 进行 SVD：
 W = U_W · S_W · V_W.T
 
-markdown
-复制
-编辑
+
 4. 将水印奇异值嵌入原图奇异值：
 S_E = S_C + α · S_W
 
-markdown
-复制
-编辑
+
 - `α` 控制嵌入强度，越大越明显但可能影响图像质量
 
 5. 重构频域区域并逆 DCT 生成带水印图像：
 C_block' = U_C · S_E · V_C.T
 C_watermarked = IDCT(C_dct')
 
-yaml
-复制
-编辑
+
 
 ### 📂 输入输出：
 
@@ -59,21 +51,15 @@ yaml
 C_block = U · S_C · V.T
 C'_block = U · S'_C · V.T
 
-markdown
-复制
-编辑
+
 2. 利用奇异值差异计算出嵌入的水印奇异值：
 S_W = (S'_C − S_C) / α
 
-markdown
-复制
-编辑
+
 3. 使用嵌入时的 U、V 矩阵恢复水印图像：
 W^ = U · S_W · V.T
 
-yaml
-复制
-编辑
+
 
 输出的 `W^` 即为提取出的水印图像。
 
