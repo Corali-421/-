@@ -91,7 +91,7 @@ python run_attacks_and_extract.py    # 攻击测试 + 提取水印
 
 ├── embed_watermark.py             # 水印嵌入脚本
 ├── extract_watermark.py           # 水印提取脚本
-├── test_robustness.py     # 鲁棒性测试脚本
+├── test_robustness.py             # 鲁棒性测试脚本
 ├── lena.png                       # 示例原图
 ├── logo.png                       # 示例水印图
 ├── output/
