@@ -79,6 +79,7 @@ $$
 代码中，compress 函数里计算了这段：
 
 uint32_t SS1 = ROTL32((ROTL32(A, 12) + E + ROTL32(T(j), j)), 7);
+
 每轮调用 T(j) 返回两个固定常量之一（0x79CC4519 或 0x7A879D8A），且需要循环左移 j 位。
 
 目前实现每次迭代动态调用 ROTL32(T(j), j)，这里可以通过提前预计算所有 T_j 左移的结果，存入静态数组。
@@ -92,7 +93,9 @@ uint32_t SS1 = ROTL32((ROTL32(A, 12) + E + ROTL32(T(j), j)), 7);
 函数extension_SIMD 中用到了 AVX2 的 256 位加载和存储指令：
 
 __m256i v1 = _mm256_loadu_si256((__m256i*)(W + i));
+
 __m256i v2 = _mm256_loadu_si256((__m256i*)(W + i + 4));
+
 _mm256_loadu_si256 是非对齐加载，虽然支持非对齐地址，但对齐加载（_mm256_load_si256）性能更优。
 
 如果将数组 W 和 W1 保证在内存中以 32 字节边界对齐（如用 alignas(32) uint32_t W[68];），可以改用对齐加载指令。
@@ -128,24 +131,68 @@ W1 的计算通常使用循环逐元素按位异或，效率受限。
 ## 3. Length Extension Attack
 
 ### 3.1 原理
-SM3 是基于 Merkle–Damgård 结构的哈希函数，存在长度扩展攻击：
-若已知 $H(m)$ 和 $|m|$，攻击者可以构造 $H(m \| pad(m) \| m')$，无需知道 $m$ 本身。
 
-### 3.2 数学表示
-已知：
-$$
-h = SM3(m)
-$$
-可以构造：
-$$
-h' = SM3_{IV=h}(m'')
-$$
-其中：
-$$
-m'' = pad(m) \| m'
-$$
+SM3 作为一种迭代式哈希函数，内部对消息分块压缩，使用前一块压缩结果作为下一块的初始状态（链变量）。它的填充规则基于消息长度，保证不同长度的消息产生不同的哈希。
 
----
+长度扩展攻击的核心思想：
+
+已知消息 M 的哈希值 H(M)，攻击者无需知道 M 的内容，可以伪造消息 M || padding(M) || M' 的哈希值。
+
+这是因为哈希函数的状态 IV（链变量）在计算 M 后已定，攻击者用 H(M) 作为新的初始状态，接着计算追加消息 M'，获得合法的哈希结果。
+
+只要能正确构造消息填充 padding(M) 和计算对应的长度，便能进行伪造。
+
+### 3.2 代码关键步骤说明
+
+1. 原始消息填充与哈希计算
+
+string padded = padding(original_msg);
+
+iteration(padded, IV);
+
+padding() 函数根据 SM3 规定对消息进行填充，添加 1 位及若干 0，并将消息长度附加在末尾，确保消息长度为512位的倍数。
+
+iteration() 按块调用 compress() 函数，用初始 IV 迭代更新链变量，计算出 original_msg 的哈希值。
+
+2. 伪造消息构造
+
+auto padding_with_len = [](const string& msg, int total_bit_len) -> string { ... };
+
+string appended_padded = padding_with_len(append_msg, original_bit_len + append_msg.size() * 8);
+
+伪造消息构造分为两部分：
+
+已知消息 original_msg 的填充部分：不能改动，保持与真实填充一致。
+
+新增消息 append_msg 的填充：消息长度需基于 (original_msg + padding(original_msg) + append_msg) 的总长度。
+
+自定义 padding_with_len 函数支持传入总比特长度，正确生成新增消息的填充，保证攻击过程中的消息长度逻辑正确。
+
+3. 使用原始消息哈希作为初始状态，迭代新增消息压缩
+
+uint32_t V[8];
+
+memcpy(V, original_IV, sizeof(uint32_t) * 8);
+
+iteration(appended_padded, V);
+
+将已知的 original_msg 的哈希值（即中间链变量 original_IV）复制到新的状态 V。
+
+利用这个状态，调用 iteration() 处理新增消息的填充后的分块，实现对追加消息的“继续哈希”。
+
+这一步模拟了哈希函数在原始消息结束后接着处理新增消息，生成伪造的哈希值。
+
+4. 打印结果验证
+
+cout << "伪造消息的哈希值: ";
+
+for (int i = 0; i < 8; i++) {
+	printf("%08X", V[i]);
+}
+
+输出伪造消息的哈希值，攻击者只需此值即可验证伪造成功。
+
+同时程序还打印了伪造的完整消息（原始消息 + 原始填充 + 新消息 + 新填充），便于进行对比和测试
 
 ### 3.3 长度扩展攻击测试结果
 <img width="1702" height="208" alt="image" src="https://github.com/user-attachments/assets/475f31b0-eff5-4fab-a57d-143d20523af2" />
