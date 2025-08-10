@@ -291,12 +291,19 @@ L_i < x < L_{i+1}
 ### 5.1 编译
 
 g++ SM3_basic.cpp -o sm3_basic
+
 g++ SM3_optimized.cpp -o sm3_optimized
+
 g++ SM3_length_extension_attack.cpp -o sm3_lenext
+
 g++ SM3_Merkle_Tree.cpp -o sm3_merkle
 
 ### 5.2 运行
+
 ./sm3_basic
+
 ./sm3_optimized
+
 ./sm3_lenext
+
 ./sm3_merkle
