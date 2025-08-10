@@ -58,6 +58,10 @@ $$
 
 ---
 
+### 1.5 基础测试结果
+<img width="1315" height="133" alt="image" src="https://github.com/user-attachments/assets/33c7466e-4692-40c9-a30a-1e4b8165f602" />
+
+
 ## 2. SM3 优化实现
 
 ### 2.1 优化方向
@@ -66,6 +70,10 @@ $$
 2. **预计算常量 $T_j$ 左移结果**  
 3. **内存对齐优化**：减少缓存缺失  
 4. **向量化优化**：利用 SIMD 指令加速
+
+### 2.2 优化测试结果
+<img width="1315" height="117" alt="image" src="https://github.com/user-attachments/assets/d0e74e8b-97dd-46f6-b9da-3d37b8feace7" />
+
 
 ## 3. Length Extension Attack
 
@@ -88,6 +96,10 @@ m'' = pad(m) \| m'
 $$
 
 ---
+
+### 3.3 长度扩展攻击测试结果
+<img width="1702" height="208" alt="image" src="https://github.com/user-attachments/assets/475f31b0-eff5-4fab-a57d-143d20523af2" />
+
 
 ## 4. RFC6962 Merkle 树
 
@@ -170,6 +182,12 @@ L_i < x < L_{i+1}
 \]
 
 ---
+
+### 4.5 Merkle Tree构建与测试结果
+<img width="1444" height="615" alt="image" src="https://github.com/user-attachments/assets/0eab843a-946e-4cee-ab1b-eae3c3ea734f" />
+<img width="1437" height="577" alt="image" src="https://github.com/user-attachments/assets/fe29fa86-c15d-4dd4-b9c1-8276c58b8256" />
+<img width="1369" height="538" alt="image" src="https://github.com/user-attachments/assets/542ae5e7-1906-4682-912d-dc0361ecd131" />
+
 
 ## 5. 编译与运行（C++）
 
